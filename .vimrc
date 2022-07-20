@@ -1,96 +1,176 @@
-" Syntax
-syntax on                      " Enable syntax highlighting
+" My custom .vimrc
 
-" Color
-color desert                   " Color
+" TODO:
+" - Fixes and Enhancements:
+"   - When pressing <Esc> the cursor moves one to the left.
+"   - When copying the cursor moves to the beginning of the selection.
+"   - Replace Tabs on the left for the project path
+"   - Enhanced Specific lang support for TS, JS, PHP, CSS & HTML
+"   - Add Snippets
+" - Plugins:
+"   - Linting
+"   - Multicursors
+"   - Search and replace, current file and project (Far) 
+"   - Improve intellisense
 
-" Set configs
-set nocompatible               " Don't make vim vi-compatibile
-set autoindent                 " Copy indent to the new line
-set backspace=indent           " ┐
-set backspace+=eol             " │ Allow `backspace`
-set backspace+=start           " ┘ in insert mode
-set backupdir=~/.vim/backups   " Set directory for backup files
-set backupskip=/tmp/*          " ┐ Don't create backups
-set backupskip+=/private/tmp/* " ┘ for certain files
+" ==> Plugins Setup 
+" ==> Additional functionality 
 
-set clipboard=unnamed          " ┐
-                               " │ Use the system clipboard
-if has("unnamedplus")          " │ as the default register
-    set clipboard+=unnamedplus " │
-endif                          " ┘
+set rtp+=~/.vim/bundle/Vundle.vim
 
-set cursorline                 " Highlight the current line
-set directory=~/.vim/swaps     " Set directory for swap files
-set encoding=utf-8 nobomb      " Use UTF-8 without BOM
-set history=5000               " Increase command line history
-set hlsearch                   " Enable search highlighting
-set ignorecase                 " Ignore case in search patterns
-set incsearch                  " Highlight search pattern as it is being typed
-set laststatus=2               " Always show the status line
-set lazyredraw                 " Do not redraw the screen while, executing macros, registers
-set listchars=tab:▸\           " ┐
-set listchars+=trail:·         " │ Use custom symbols to
-set listchars+=eol:↴           " │ represent invisible characters
-set listchars+=nbsp:_          " ┘
-set magic                      " Enable extended regexp
-set mousehide                  " Hide mouse pointer while typing
-set noerrorbells               " Disable error bells
-set nojoinspaces               " When using the join command, only insert a single space after a `.`, `?`, or `!`
-set nostartofline              " Kept the cursor on the same column
-set number                     " Show line number. Disable temp with :set nonu
-set numberwidth=5              " Increase the minimal number of columns used for the `line number`
-set report=0                   " Report the number of lines changed
-set ruler                      " Show cursor position
-set scrolloff=5                " When scrolling, keep the cursor, 5 lines below the top and 5 lines above the bottom of the screen
-set shortmess=aAItW            " Avoid all the hit-enter prompts
-set showcmd                    " Show the command being typed
-set showmode                   " Show current mode
-set spelllang=en_us            " Set the spellchecking language
-set smartcase                  " Override `ignorecase` option, if the search pattern contains uppercase characters
-set synmaxcol=2500             " Limit syntax highlighting (this avoids the very slow redrawing when long lines)
-set tabstop=2                  " ┐
-set softtabstop=2              " │ Set global <TAB> settings
-set shiftwidth=2               " │ http://vimcasts.org/e/2
-set expandtab                  " ┘
-set ttyfast                    " Enable fast terminal connection
-set undodir=~/.vim/undos       " Set directory for undo files
-set undofile                   " Automatically save undo history
-set virtualedit=all            " Allow cursor to be anywhere
-set visualbell                 " ┐
-set noerrorbells               " │ Disable beeping and window flashing
-set t_vb=                      " ┘ https://vim.wikia.com/wiki/Disable_beeping
-set wildmenu                   " Enable enhanced command-line, completion (by hitting <TAB> in command mode
-set winminheight=0             " Allow windows to be squashed
-set rtp+=~/.vim/bundle/Vundle.vim " set the runtime path to include Vundle and initialize
+call vundle#begin()
 
-" Quicker window movement
-nnoremap <C-j> <C-w>j
-nnoremap <C-k> <C-w>k
-nnoremap <C-h> <C-w>h
-nnoremap <C-l> <C-w>l
-
-" File types
-filetype off                  " required
-filetype plugin indent on     " required
-
-" Plugins using Vundle
-call vundle#begin()           " Plugins using Vundle
-Plugin 'VundleVim/Vundle.vim'
-Plugin 'scrooloose/nerdtree', { 'on':  'NERDTreeToggle' } " [1] File tree viewer
-Plugin 'lepture/vim-jinja'  " [2] Twig syntax
-Plugin 'tpope/vim-surround' " [3] easily surround things... Nice intro video: https://www.youtube.com/watch?v=5HF4jSyPpvs
-Plugin 'tpope/vim-fugitive' " [4] Themes / Prettify stuff
-Plugin 'vim-airline/vim-airline'
+Plugin 'ctrlpvim/ctrlp.vim' 
+Plugin 'editorconfig/editorconfig-vim' 
+Plugin 'powerline/powerline-fonts'
+Plugin 'vim-airline/vim-airline' 
 Plugin 'vim-airline/vim-airline-themes'
-Plugin 'flazz/vim-colorschemes'
-Plugin 'ervandew/supertab'
-Plugin 'justinj/vim-react-snippets'
-Plugin 'ctrlpvim/ctrlp.vim'
-Plugin 'vim-scripts/tComment' "Comment easily with gcc
-Plugin 'prettier/vim-prettier', { 'do': 'yarn install' }
-Plugin 'Valloric/YouCompleteMe', { 'do': './install.py --tern-completer' }
-call vundle#end()            " required
+Plugin 'airblade/vim-gitgutter'
+Plugin 'tpope/vim-fugitive'
+Plugin 'SirVer/ultisnips'
+Plugin 'honza/vim-snippets'
+Plugin 'neoclide/coc.nvim'
+Plugin 'leafgarland/typescript-vim'
+Plugin 'Shougo/vimproc'
+Plugin 'Quramy/tsuquyomi'
+Plugin 'preservim/nerdtree'
+Plugin 'Xuyuanp/nerdtree-git-plugin'
+Plugin 'mhinz/vim-startify'
 
-" Plugins Configs
-au VimEnter *  NERDTree
+call vundle#end()
+
+" ==> Running commands
+" ==> Setting up env, etc ...
+
+" Allow us to use Ctrl-s and Ctrl-q as keybinds
+silent !stty -ixon
+
+" Restore default behaviour when leaving Vim.
+autocmd VimLeave * silent !stty ixon
+
+" Create parent directories 
+autocmd BufWritePre * :silent !mkdir -p %:p:h
+
+" ==> Color scheme
+" ==> Configure how vim looks
+
+colorscheme Monokai " Use Monokai theme ~/.vim/colors/Monokai.vim
+
+" ==> Handling syntax
+" ==> Use syntax highlighting
+
+syntax on " Use syntax highlighting
+
+" ==> Filetype
+" ==> File configs 
+
+filetype plugin indent on " Filetype indentation
+
+" ==> Setting options
+" ==> Make vim yours
+
+set showmode " Always show mode
+set number " Display numbers
+set smartindent " Indent Enhacements
+set tabstop=2 " Tab indenting to 2
+set shiftwidth=2 " When indenting with '>'
+set expandtab " Indenting on tab
+set backspace=indent,eol,start " Familiar like backspace behaving
+set clipboard=unnamedplus " Make sure vim uses the system keyboard
+set ignorecase " Case insensitive search
+set smartcase " Use case sensitive if any cap is used
+set incsearch " show match as search proceeds
+set hlsearch " search highlights
+set mouse=a " Enable using the mouse if terminal emulator
+set updatetime=100 " Reduces update time for gitgutter to show updates
+set encoding=UTF-8 " The encoding displayed.
+set fileencoding=UTF-8 " The encoding written to file.
+set nobackup " Prevent vim from creating backups
+set noswapfile " Prevent vim from creating .sw files
+
+" ==> Mappings
+" ==> Custom shortcuts to save time
+
+" Selection
+" Ctrl + a = Toggle Select all
+map <C-a> <Esc>ggVG<Enter>
+imap <C-a> <Esc>ggVG<Enter>
+
+" Prevent from mouse scrolling
+" Pass the bottom end line
+map <ScrollWheelUp> H5k
+map <ScrollWheelDown> L5j
+
+" File shortkeys
+" Ctrl + n = Create a new file
+" Ctrl + s = Save current file
+" Ctrl + o = Use ctrlp Plugin
+map <C-n> :tabnew ./filename.ext
+noremap <C-s> :w<Enter>
+vnoremap <C-s> <Esc>:w<Enter>
+inoremap <C-s> <Esc>:w<Enter>
+
+" Cut, Copy and Pase shortkeys
+" Ctrl + x = Cut selection
+" Ctrl + c = Copy selection
+" Ctrl + p = Paste selection
+vmap <C-c> "+yi
+vmap <C-x> "+c
+vmap <C-v> c<Esc>"+p
+nmap <C-v> p
+imap <C-v> <Esc>"+pa
+
+" Left indentation
+" Shift + Tab = Indent left
+nnoremap <S-Tab> <<
+inoremap <S-Tab> <C-d>
+
+" Quit Vim
+map <C-q> :qa!<Enter>
+
+" Undo, Redo Default shortkeys
+" Ctrl + z = Undo 
+" Ctrl + r = Redo
+map <C-z> u
+imap <C-z> <Esc>ua
+vmap <C-z> <Esc>uv
+imap <C-r> <Esc><C-r>a
+vmap <C-r> <Esc><C-r>v
+
+" Tabs shortkeys
+" Ctrl + t = Open new tab
+" Ctrl + w = Close current tab
+" Ctrl + Left = Navigate to previous tab
+" Ctrl + Right = Navigate to next tab
+map <C-t> :tabnew ./filename.ext
+map <C-w> :close<Enter>
+map <C-Left> :tabprevious<Enter>
+map <C-Right> :tabnext<Enter>
+
+" Find shortkeys
+" Ctrl + f = Find in current document
+map <C-f> /
+imap <C-f> <Esc>/
+vmap <C-f> <Esc>/
+
+" ==> Plugins Configuration
+
+autocmd VimEnter *
+\   if !argc() || argv(0) == '.'
+\ |   Startify
+\ |   NERDTree
+\ |   wincmd w
+\ | endif
+
+" Nerdtree
+nnoremap <C-l> :NERDTreeToggle<CR>
+
+" Ctrlp configs
+let g:ctrlp_prompt_mappings = { 'AcceptSelection("e")': [], 'AcceptSelection("t")': ['<cr>', '<c-m>'] } " Open new files in tab
+let g:ctrlp_match_current_file = 1 " List editing files too
+let g:ctrlp_user_command = ['.git/', 'git --git-dir=%s/.git ls-files -oc --exclude-standard'] " Ignore from .gitignore
+
+" Airline configs
+let g:airline#extensions#tabline#enabled = 1 " Enhaced tabs
+let g:airline_theme = 'base16_grayscale' " Bar theme
+let g:airline_powerline_fonts = 1
